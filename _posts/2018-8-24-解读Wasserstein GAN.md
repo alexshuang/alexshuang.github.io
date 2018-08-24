@@ -1,4 +1,7 @@
-﻿- [Wasserstein GAN](https://arxiv.org/abs/1701.07875)
+﻿---
+
+#### Papers:
+- [Wasserstein GAN](https://arxiv.org/abs/1701.07875)
 - [Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks](https://arxiv.org/abs/1511.06434)
 - [Generative Adversarial Networks](https://arxiv.org/abs/1406.2661)
 

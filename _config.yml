@@ -12,7 +12,7 @@ baseurl: ""                             # for example, '/blog' if your blog host
 future: false
 
 new_post_name: :title.md
-titlecase: false
+titlecase: True
 
 # SNS settings
 RSS: false
