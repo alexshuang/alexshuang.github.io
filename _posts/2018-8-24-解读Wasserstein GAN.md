@@ -58,5 +58,8 @@ while在这里体现的是对一个mini batch中所有real samples和fake sample
 
 ---
 引用：
+[Wasserstein GAN](https://arxiv.org/abs/1701.07875)
+[Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks](https://arxiv.org/abs/1511.06434)
+[Generative Adversarial Networks](https://arxiv.org/abs/1406.2661)
 [Deep Learning 2: Part 2 Lesson 12](https://medium.com/@hiromi_suenaga/deep-learning-2-part-2-lesson-12-215dfbf04a94)
 
