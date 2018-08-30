@@ -13,7 +13,9 @@
 一个神经网络模型主要由Dataset、Model和Loss function这三部分构成，首先我们先看Dataset：
 
 你可以通过CelebA官网上的指引来下载数据集，当然也可以像我这样使用[kaggle](http://www.kaggle.com)的数据集：
-```kaggle datasets download -d jessicali9530/celeba-dataset```
+```
+kaggle datasets download -d jessicali9530/celeba-dataset
+```
 
 我是基于[fast.ai](https://github.com/fastai/fastai)深度学习框架来编写程序的，它为加载dataset提供了从csv文件加载数据的API，所以我们需要先生成dataset的metadata--files.csv：
 ```
@@ -47,13 +49,15 @@ plt.tight_layout()
 ### Model
 WGAN的作者实现了分别基于[GANs](https://arxiv.org/abs/1406.2661)和[DCGANs](https://arxiv.org/abs/1511.06434)的两个版本，我这里采用DCGANs的网络架构。
 
-##### DCGANs的实现细节：
+### DCGANs的实现细节：
 ![image.png](https://upload-images.jianshu.io/upload_images/13575947-10d3ded17655d617.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 除此之外，paper里还提到几个细节：
 - generator的输入是长度为100的向量，输出的是rank 4，64x64大小的matrix。
 - 不要将batchnorm部署在generator的输出层和discriminator的输入层。
 - LeakyRelu的"slope of the leak"系数设定为0.2。
-##### Discriminator
+
+### Discriminator
+
 ```
 class ConvBlock(nn.Module):
   def __init__(self, in_c, out_c, ks, stride, bn=True):
@@ -91,9 +95,11 @@ class DCGAN_D(nn.Module):
     x = self.pyramid(x)
     return self.final(x).mean().view(1)
 ```
+
 discriminator是CNN classifier，最终输出一个scalar，该值越小代表fake data的真实系数越高。这里的代码很多都是从原作者的源码中直接借鉴过来的，它通过多个stride convolution操作直至input的grid size等于4，最终取其均值作为output。通常情况下，CNN classifier会以adaptive average pooling生成rank 4, 1x1大小的matrix，将其做flatten操作后作为输入传入全连接层，或许adaptive average pooling也能应用到discriminator中，而且达到更好的效果。
 
-##### Generator
+### Generator
+
 ```
 class DeconvBlock(nn.Module):
   def __init__(self, in_c, out_c, ks, stride, pad, bn=True):
@@ -132,18 +138,22 @@ class DCGAN_G(nn.Module):
     x = self.extra(x)
     return F.tanh(self.final(x))
 ```
+
 generator和discriminator相反，通过deconvolution将rank 1的向量转化为rank 4, 64x64的矩阵。rank 1向量就是长度为100的噪声向量，为deconvolution()的参数格式为rank 4，因此需要gen_noise()将rank 1的噪声转化为rank 4矩阵。
 ### Noise Generator
+
 ```
 def gen_noise(bs):
   return V(torch.zeros((bs, nz, 1, 1)).normal_(0, 1))
 ```
+
 ![image.png](https://upload-images.jianshu.io/upload_images/13575947-681149bcb326eb55.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ---
 
 ### WGAN / [paper](https://arxiv.org/abs/1701.07875)
 ![WGAN.png](https://upload-images.jianshu.io/upload_images/13575947-9ee16a3d12939ab8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
 ```
 ncritic = 5
 
@@ -184,11 +194,13 @@ def WGAN_fit(md, niter):
     print(f'd_loss: {to_np(d_loss)}; g_loss: {to_np(g_loss)}; '
           f'real_loss: {to_np(real_loss)}; fake_loss: {to_np(fake_loss)}')
 ```
+
 paper里已经给出了明确的实现方法以及各超参系数，这里不需要额外多说什么了，如果你对其训练方法或涉及到的公式有所不解，请点击[解读WGAN](https://alexshuang.github.io/2018/08/24/%E8%A7%A3%E8%AF%BBWasserstein-GAN/)。有经验的朋友看到这会觉得很奇怪，为什么这里没有metric方法？GANs是无监督学习的模型，所以大家都会调侃GANs是一种不用看metric指标的模型哈哈。
 
 ---
 
 ### 模型训练
+
 ```
 files = PATH.glob('**/*.jpg')
 with CSV_SMALL_PATH.open('w') as fp:
